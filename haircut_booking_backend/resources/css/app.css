@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* Utility class for hiding elements */
+.hidden {
+    display: none;
+}
+
+/* Show loading text during form submission */
+button[disabled] .search-text {
+    display: none; /* Hide search text */
+}
+
+button[disabled] .loading-text {
+    display: inline; /* Show loading text */
+}
+
+/* Button active state */
+#searchBtn:active {
+    background-color: #3b82f6; /* Darker blue shade */
+    opacity: 0.7; /* Slightly transparent effect */
+}
+
+/* Button focus state */
+#searchBtn:focus {
+    outline: 2px solid #3b82f6; /* Blue outline */
+    outline-offset: 2px; /* Space between outline and button */
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); /* Soft glow */
+}

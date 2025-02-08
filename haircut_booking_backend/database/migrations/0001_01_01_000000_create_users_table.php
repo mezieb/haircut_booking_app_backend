@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->string('role')->default('client'); // Add role column with default value
+            $table->foreignId('status_id')->constrained()->default(1); // Add foreign key for status
             $table->timestamps();
         });
 
