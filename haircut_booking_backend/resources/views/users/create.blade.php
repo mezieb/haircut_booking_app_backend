@@ -45,12 +45,12 @@
 
             <div class="mb-4">
                 <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
-                <select id="role" name="role" required
+                <select id="role" name="role_id" required
                         class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
-                    <option value="client">Client</option>
-                    <option value="barber">Barber</option>
-                    <option value="staff">Staff</option>
-                    <option value="admin">Admin</option>
+                        <option value="">Select Role</option> <!-- Default option -->
+                        @foreach ($roles as $role) <!-- Loop through each role -->
+                            <option value="{{ $role->id }}">{{ $role->role_name }}</option> <!-- Use role_id as value -->
+                        @endforeach
                 </select>
             </div>
 

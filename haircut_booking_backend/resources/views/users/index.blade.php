@@ -22,12 +22,10 @@
 
     <!-- Include User Statistics Component -->
     @include('users.userstatist', [
-        'totalUsers' => $totalUsers,
-        'totalClients' => $totalClients,
-        'totalBarbers' => $totalBarbers,
-        'totalStaff' => $totalStaff
-    ])
-    <!-- end of Include User Statistics Component -->
+    'totalUsers' => $totalUsers,
+    'roleStatistics' => $roleStatistics // Pass the dynamic role statistics
+])
+<!-- end of Include User Statistics Component -->
     <!-- Unified search and filter functionality -->
     <div class="mt-4 mb-4">
         <form action="{{ route('users.index') }}" method="GET" class="relative flex items-center">
@@ -37,10 +35,11 @@
 
             <select name="role" class="ml-2 border border-gray-300 rounded-md p-2">
                 <option value="">All Roles</option>
-                <option value="client" {{ request('role') === 'client' ? 'selected' : '' }}>Client</option>
-                <option value="barber" {{ request('role') === 'barber' ? 'selected' : '' }}>Barber</option>
-                <option value="staff" {{ request('role') === 'staff' ? 'selected' : '' }}>Staff</option>
-                <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                @foreach ($roles as $role)
+                <option value="{{ $role->id }}" {{ request('role') == $role->id ? 'selected' : '' }}>
+                    {{ $role->role_name }}
+                </option>
+            @endforeach
             </select>
 
             <button type="submit" id="searchBtn" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 ml-2 relative">
@@ -81,7 +80,7 @@
         <tr class="bg-white hover:bg-gray-100">
             <td class="border border-gray-400 p-2">{{ $user->name }}</td>
             <td class="border border-gray-400 p-2">{{ $user->email }}</td>
-            <td class="border border-gray-400 p-2">{{ $user->role }}</td>
+            <td class="border border-gray-400 p-2">{{ $user->role->role_name ?? 'No Role Assigned' }}</td>
             <td class="border border-gray-400 p-2">{{ $user->created_at->format('m/d/Y') }}</td>
             <td class="border border-gray-400 p-2">
                 @include('users.userstatus', ['user' => $user]) <!-- Include User Status Component -->

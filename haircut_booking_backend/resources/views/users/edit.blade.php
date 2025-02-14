@@ -46,12 +46,11 @@
 
             <div class="mb-4">
                 <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
-                <select id="role" name="role" required
+                <select id="role" name="role_id" required
                         class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
-                    <option value="client" {{ $user->role === 'client' ? 'selected' : '' }}>Client</option>
-                    <option value="barber" {{ $user->role === 'barber' ? 'selected' : '' }}>Barber</option>
-                    <option value="staff" {{ $user->role === 'staff' ? 'selected' : '' }}>Staff</option>
-                    <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                        @foreach ($roles as $role) <!-- Iterate through roles provided by the controller -->
+                        <option value="{{ $role->id }}" {{ $user->role_id === $role->id ? 'selected' : '' }}>{{ $role->role_name }}</option>
+                    @endforeach
                 </select>
             </div>
 

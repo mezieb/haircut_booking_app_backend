@@ -18,8 +18,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->string('role')->default('client'); // Add role column with default value
-            $table->foreignId('status_id')->constrained()->default(1); // Add foreign key for status
+            $table->foreignId('role_id')->constrained('roles'); // Explicitly reference roles table
+            $table->foreignId('status_id')->default(1)->constrained('statuses'); // Explicitly reference statuses table
             $table->timestamps();
         });
 

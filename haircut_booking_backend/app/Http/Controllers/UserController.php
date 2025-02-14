@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Role; // Ensure you import the Role model
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,7 +23,7 @@ class UserController extends Controller
 
         // Filter by role if a role is selected
         if ($role) {
-            $query->where('role', $role);
+            $query->where('role_id', $role);
         }
 
         // Search users by name or email if a search query exists
@@ -40,19 +41,26 @@ class UserController extends Controller
         $users = $query->paginate(10);
 
 
-        // Calculate statistics
+        // Calculate statistics dynamically
         $totalUsers = User::count();
-        $totalClients = User::where('role', 'client')->count();
-        $totalBarbers = User::where('role', 'barber')->count();
-        $totalStaff = User::where('role', 'staff')->count();
+        $roles = Role::all()->keyBy('id'); // Fetch all roles at once
 
-        return view('users.index', compact('users', 'totalUsers', 'totalClients', 'totalBarbers', 'totalStaff')); // Return a view with users list
+        $roleStatistics = [];
+
+        foreach ($roles as $role) {
+            // Count users for each role based on role_id
+            $roleStatistics[$role->role_name] = User::where('role_id', $role->id)->count();
+        }
+
+        return view('users.index', compact('users', 'totalUsers', 'roleStatistics', 'roles'));
     }
 
     // Show the form for creating a new user
     public function create()
     {
-        return view('users.create'); // Return a view with create user form
+        // Fetch all roles from the database to pass to the view
+        $roles = Role::all();
+        return view('users.create', compact('roles')); // Return a view with create user form
     }
 
     // Store a newly created user in storage
@@ -62,23 +70,30 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string',
+            'role_id' => 'required|exists:roles,id', // Update this line
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password), // Hashing the password
-            'role' => $request->role,
+            'role_id' => $request->role_id, // Use role_id instead
         ]);
 
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
+    // Show the details of the specified user
+    public function show(User $user)
+    {
+        return view('users.show', compact('user')); // Return a view with user details
+    }
+
     // Show the form for editing the specified user
     public function edit(User $user)
     {
-        return view('users.edit', compact('user')); // Return a view with edit user form
+        $roles = Role::all(); // Fetch roles
+        return view('users.edit', compact('user', 'roles')); // Return a view with edit user form
     }
 
     // Update the specified user in storage
@@ -88,7 +103,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id, // Unique except current user
             'password' => 'nullable|string|min:8|confirmed',
-            'role' => 'required|string',
+            'role_id' => 'required|exists:roles,id', // Update this line
         ]);
 
         // Update user data
@@ -97,7 +112,7 @@ class UserController extends Controller
         if ($request->password) {
             $user->password = Hash::make($request->password); // Hash password if updated
         }
-        $user->role = $request->role;
+        $user->role_id = $request->role_id; // Use role_id instead
         $user->save();
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
